@@ -32,7 +32,7 @@ def get_total_calories(pop=None):
 
 ### DAY 2 FUNCTIONS
 def process_day2_input(path=None):
-    with open('../inputs/day2_input.txt', 'r') as input:
+    with open(path, 'r') as input:
         data = input.read()
 
     input.close()
