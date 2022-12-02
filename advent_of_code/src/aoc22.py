@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def process_input(path=None):
+def process_day1_input(path=None):
 
     with open(path, 'r') as input:
         data = input.read()
