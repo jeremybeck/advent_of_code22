@@ -25,3 +25,11 @@ def day3_star2():
     supplies = read_day3_input(path='../inputs/day3_inputs.txt')
     elf_groups = create_elf_groups(supplies=supplies, chunksize=3)
     return sum([get_badge_priority_score(group=x) for x in elf_groups])
+
+def day4_star1():
+    assignments = get_day4_input(path='../inputs/day4_input.txt')
+    return sum([is_assignment_subset(assignments=x) for x in assignments])
+
+def day4_star2():
+    assignments = get_day4_input(path='../inputs/day4_input.txt')
+    return sum([do_assignments_overlap(assignments=x) for x in assignments])
