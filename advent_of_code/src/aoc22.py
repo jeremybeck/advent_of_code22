@@ -222,3 +222,40 @@ def create_elf_groups(supplies=None, chunksize=3):
     return chunks
 
 
+### Day 4
+
+def get_day4_input(path=None):
+    with open(path, 'r') as input:
+        assignments = input.read()
+
+    input.close()
+    assignments = assignments.rstrip().split('\n')
+
+    return assignments
+
+def is_assignment_subset(assignments=None):
+
+    ass1, ass2 = assignments.split(',')
+
+    ass1 = ass1.split('-')
+    ass2 = ass2.split('-')
+
+    ass1_set = set(x for x in range(int(ass1[0]), int(ass1[1])+1))
+    ass2_set = set(x for x in range(int(ass2[0]), int(ass2[1])+1))
+
+    return (ass1_set.issubset(ass2_set) or ass2_set.issubset(ass1_set))
+
+
+def do_assignments_overlap(assignments=None):
+
+    ass1, ass2 = assignments.split(',')
+
+    ass1 = ass1.split('-')
+    ass2 = ass2.split('-')
+
+    ass1_set = set(x for x in range(int(ass1[0]), int(ass1[1])+1))
+    ass2_set = set(x for x in range(int(ass2[0]), int(ass2[1])+1))
+
+    inter = ass1_set.intersection(ass2_set)
+
+    return len(inter) > 0
