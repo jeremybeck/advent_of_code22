@@ -1,4 +1,5 @@
 import numpy as np
+import string
 
 ### DAY 1 FUNCTIONS
 def process_day1_input(path=None):
