@@ -16,3 +16,12 @@ def day2_star2():
     rounds = process_day2_input(path='../inputs/day2_input.txt')
     rounds_corrected = [create_new_choices(x) for x in rounds]
     return get_my_score(rounds=rounds_corrected)
+
+def day3_star1():
+    supplies = read_day3_input(path='../inputs/day3_inputs.txt')
+    return sum([analyze_packpack(cargo=x) for x in supplies])
+
+def day3_star2():
+    supplies = read_day3_input(path='../inputs/day3_inputs.txt')
+    elf_groups = create_elf_groups(supplies=supplies, chunksize=3)
+    return sum([get_badge_priority_score(group=x) for x in elf_groups])
