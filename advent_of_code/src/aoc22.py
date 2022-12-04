@@ -136,3 +136,89 @@ def create_new_choices(strategy_choice=None):
     my_choice_ltr = choice_lookup_reversed.get(my_choice)
 
     return (their_choice, my_choice_ltr)
+
+
+### Day 3
+
+def read_day3_input(path=None):
+    with open(path, 'r') as input:
+        supplies = input.read()
+
+    supplies = supplies.rstrip('\n').split('\n')
+
+    return supplies
+
+def supplies_in_pockets(cargo=None):
+
+    cargo_list = [x for x in cargo]
+    split_point = int(len(cargo_list)/2)
+
+    pocket1 = cargo_list[:split_point]
+    pocket2 = cargo_list[split_point:]
+
+    assert len(pocket1) == len(pocket2), 'Supplies Not Split Evenly'
+    return pocket1, pocket2
+
+def compare_pockets(pocket1=None, pocket2=None):
+
+    pocket1 = set(pocket1)
+    pocket2 = set(pocket2)
+
+    return set(pocket1).intersection(set(pocket2))
+
+def determine_badge_from_cargo(inputs=None):
+
+    input_lists = [[x for x in backpack] for backpack in inputs]
+
+    sets = map(set, input_lists)
+    return set.intersection(*sets)
+
+
+def create_priority_lookup_dict():
+
+    item_priority_lookup = {}
+
+    for i, char in enumerate(string.ascii_lowercase):
+        item_priority_lookup[char] = i+1
+
+    for i, char in enumerate(string.ascii_uppercase):
+        item_priority_lookup[char] = i+27
+
+    return item_priority_lookup
+
+
+def get_priority_score(overlap=None, lookup_dict=None):
+
+    priorities = [lookup_dict.get(x) for x in overlap]
+
+    return sum(priorities)
+
+def analyze_packpack(cargo=None):
+
+    pocket1, pocket2 = supplies_in_pockets(cargo=cargo)
+    overlap = compare_pockets(pocket1=pocket1, pocket2=pocket2)
+
+    # Not most efficient to recreate throughout loop but it's fine for this
+    priority_lookup_dict = create_priority_lookup_dict()
+    score = get_priority_score(overlap=overlap, lookup_dict=priority_lookup_dict)
+
+    return score
+
+
+def get_badge_priority_score(group=None):
+
+    badge = determine_badge_from_cargo(inputs=group)
+    # Not most efficient to recreate throughout loop but it's fine for this
+    priority_lookup_dict = create_priority_lookup_dict()
+    score = get_priority_score(overlap=badge, lookup_dict=priority_lookup_dict)
+
+    return score
+
+
+def create_elf_groups(supplies=None, chunksize=3):
+
+    chunks = [x for x in zip(*(iter(supplies),) * chunksize)]
+
+    return chunks
+
+
