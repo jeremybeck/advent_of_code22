@@ -259,3 +259,135 @@ def do_assignments_overlap(assignments=None):
     inter = ass1_set.intersection(ass2_set)
 
     return len(inter) > 0
+
+
+### Day 5
+
+
+def process_cargo_stacks(stacks=None,test=False):
+
+    stack_contents = {
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+        6: [],
+        7: [],
+        8: [],
+        9: []
+    }
+
+    if test:
+        stack_map = [(i, stacks[-1].index(str(i))) for i in range(1,4)]
+    else:
+        stack_map = [(i, stacks[-1].index(str(i))) for i in range(1,10)]
+
+    for row in stacks[:-1]:
+        for stack, idx in stack_map:
+            try:
+                if row[idx] == ' ':
+                    pass
+                else:
+                    stack_dict = stack_contents.get(stack)
+                    stack_dict.insert(0,row[idx])
+                    stack_contents[stack] = stack_dict
+            except Exception as E:
+                #print(E)
+
+                pass
+
+    return stack_contents
+
+
+def split_cargo_manifest(manifest=None):
+
+    for i, line in enumerate(manifest):
+        if line.startswith(' 1   2   3'):
+            idx = i
+
+    stacks = manifest[0:idx+1]
+    moves = manifest[idx+2:]
+
+    return stacks, moves
+
+
+def process_moves(moves):
+
+    moves_processed = []
+
+    for move in moves:
+        move = move.split(' ')
+        count = int(move[1])
+        source = int(move[3])
+        destination = int(move[5])
+
+        moves_processed.append({'count':count, 'source':source, 'destination':destination})
+
+    return moves_processed
+
+
+def get_day5_input(path='../inputs/day5_input.txt', test=False):
+
+    if test:
+        path = path.replace('day5', 'day5_test')
+
+    with open(path, 'r') as input:
+        cargo = input.read()
+
+    input.close()
+
+    lines = cargo.rstrip().split('\n')
+
+    stacks, moves = split_cargo_manifest(manifest=lines)
+
+    stack_contents = process_cargo_stacks(stacks, test=test)
+    moves_processed = process_moves(moves)
+
+    return stack_contents, moves_processed
+
+
+def move_cargo_step(stacks=None, move=None, reverse=True):
+
+    count = move.get('count')
+    src = move.get('source')
+    dest = move.get('destination')
+
+    src_stack = stacks.get(src)
+    dest_stack = stacks.get(dest)
+
+    count = -1*count
+    src_remainder = src_stack[0:count]
+
+    if reverse:
+        src_move = src_stack[count:][::-1]
+    else:
+        src_move = src_stack[count:]
+
+    dest_stack = dest_stack + src_move
+
+    stacks[src] = src_remainder
+    stacks[dest] = dest_stack
+
+    return stacks
+
+
+def follow_cargo_steps(stacks=None, moves=None, reverse=True):
+
+    for move in moves:
+        stacks = move_cargo_step(stacks=stacks, move=move, reverse=reverse)
+
+    return stacks
+
+
+def get_cargo_top(stacks=None, test=False):
+
+    if test:
+        max = 3
+    else:
+        max = 10
+    output_str = []
+    for i in range(1,max):
+        output_str.append(stacks.get(i)[-1])
+
+    return ''.join(output_str)
