@@ -33,3 +33,13 @@ def day4_star1():
 def day4_star2():
     assignments = get_day4_input(path='../inputs/day4_input.txt')
     return sum([do_assignments_overlap(assignments=x) for x in assignments])
+
+def day5_star1():
+    stacks, moves = get_day5_input(test=False)
+    stacks = follow_cargo_steps(stacks=stacks, moves=moves, reverse=True)
+    return get_cargo_top(stacks=stacks)
+
+def day5_star2():
+    stacks, moves = get_day5_input(test=False)
+    stacks = follow_cargo_steps(stacks=stacks, moves=moves, reverse=False)
+    return get_cargo_top(stacks=stacks)
