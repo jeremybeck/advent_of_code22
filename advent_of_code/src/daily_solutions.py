@@ -43,3 +43,11 @@ def day5_star2():
     stacks, moves = get_day5_input(test=False)
     stacks = follow_cargo_steps(stacks=stacks, moves=moves, reverse=False)
     return get_cargo_top(stacks=stacks)
+
+def day6_star1():
+    stream = get_day6_input()
+    return rolling_window(stream=stream, windowsize=4)
+
+def day6_star2():
+    stream = get_day6_input()
+    return rolling_window(stream=stream, windowsize=14)
