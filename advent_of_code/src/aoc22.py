@@ -391,3 +391,32 @@ def get_cargo_top(stacks=None, test=False):
         output_str.append(stacks.get(i)[-1])
 
     return ''.join(output_str)
+
+### Day 6
+
+def get_day6_input(path='../inputs/day6_input.txt'):
+
+    with open(path, 'r') as input:
+        stream = input.read()
+
+    input.close()
+
+    return stream.rstrip()
+
+
+def rolling_window(stream=None, windowsize=4):
+
+    # Pretend it's a stream and we don't know the total number
+
+    match = False
+    i = 0
+
+    while match == False:
+        size = len(set([x for x in stream[i:windowsize+i]]))
+        if size == windowsize:
+            match = True
+        else:
+            i += 1
+
+    return windowsize+i
+
