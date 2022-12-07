@@ -1,5 +1,6 @@
 import numpy as np
 import string
+import re
 
 ### DAY 1 FUNCTIONS
 def process_day1_input(path=None):
@@ -419,4 +420,107 @@ def rolling_window(stream=None, windowsize=4):
             i += 1
 
     return windowsize+i
+
+
+### Day 7
+
+def get_day7_input(path='../inputs/day7_input.txt'):
+
+    with open(path, 'r') as input:
+        directory_struct = input.read()
+
+    input.close()
+
+    return directory_struct.split('\n')
+
+
+def get_directory_sizes(struct=None):
+
+    folders_flat = {}
+
+    parent_dir = []
+    i = 0
+
+    for line in struct:
+        #print(line)
+        if line.startswith('$ cd'):
+            result = re.match(r"[$] cd (.*)",line)
+
+            try:
+                if result.groups()[0] == '..':
+                    parent_dir.pop()
+                    # code to go up one directory to parent dir
+                else:
+                    current_dir = result.groups()[0]
+                    parent_dir.append(current_dir)
+
+                    key = ':'.join(parent_dir)
+                    if folders_flat.get(key, None) != None:
+                        print('Error - directory already exists', key)
+                        break
+                    else:
+                        #print('adding key to dir dict:', key)
+                        folders_flat[key] = []
+                        #print(key, folders_flat.get(key))
+
+            except Exception as e:
+                print(e)
+                raise(e)
+
+        elif line.startswith('$ ls'):
+            #print('Parsing Contents for ','/'.join(parent_dir))
+            pass
+        else:
+            if line.startswith('dir'):#Dir Handling
+                pass
+                #_ , dirname = line.split(' ')
+                #print ('/'.join(parent_dir),'/',dirname)
+            else:
+                try:
+                    fsize, fname = line.split(' ')
+                    #print('/'.join(parent_dir),'/',fname,':', fsize)
+                    directory_path = ':'.join(parent_dir).split(':')
+                    while len(directory_path) > 0:
+                        dir = ':'.join(directory_path)
+                        try:
+                            folder_contents = folders_flat.get(dir)
+                            folder_contents.append(int(fsize))
+                            folders_flat[dir] = folder_contents
+                        except Exception as e:
+                            print(e, dir, folders_flat.get(dir))
+                            raise(e)
+
+                        directory_path.pop()
+
+                except Exception as e:
+                    print('Error:',line)
+                    raise e
+
+    return folders_flat
+
+
+def filter_folders(folders=None, thresh=100000):
+    return [x for x in folders if x[1] <= thresh]
+
+
+def get_threshold_totals(folders=None):
+    return sum([x[1] for x in folders])
+
+
+def get_actual_free_space(folders=None, tsize=70000000):
+
+    usize = folders.get('/')
+
+    return tsize - sum(usize)
+
+def get_deletion_size_needed(total_needed=30000000, total_free=None):
+    return total_needed - total_free
+
+
+def find_smallest_ideal_folder(folders=None, thresh=30000000):
+    candidates = [x for x in folders if x[1] >= thresh]
+    candidates_sorted = sorted(candidates, key=lambda x: x[1])
+
+    return candidates_sorted[0]
+
 
