@@ -51,3 +51,16 @@ def day6_star1():
 def day6_star2():
     stream = get_day6_input()
     return rolling_window(stream=stream, windowsize=14)
+
+def day7_star1():
+    directory_struct = get_day7_input()
+    folder_sizes = get_directory_sizes(struct=directory_struct)
+    folder_totals = [(key, sum(val)) for key, val in folder_sizes.items()]
+    return get_threshold_totals(folders=filter_folders(folders=folder_totals, thresh=100000))
+
+def day7_star2():
+    directory_struct = get_day7_input()
+    folder_sizes = get_directory_sizes(struct=directory_struct)
+    folder_totals = [(key, sum(val)) for key, val in folder_sizes.items()]
+    fsize = get_actual_free_space(folders=folder_sizes)
+    return find_smallest_ideal_folder(folders=folder_totals, thresh=get_deletion_size_needed(total_free=fsize))[1]
