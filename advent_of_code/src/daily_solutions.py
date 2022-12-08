@@ -64,3 +64,11 @@ def day7_star2():
     folder_totals = [(key, sum(val)) for key, val in folder_sizes.items()]
     fsize = get_actual_free_space(folders=folder_sizes)
     return find_smallest_ideal_folder(folders=folder_totals, thresh=get_deletion_size_needed(total_free=fsize))[1]
+
+def day8_star1():
+    treemap = get_day8_input()
+    return treemap_check(map=treemap)
+
+def day8_star2():
+    treemap = get_day8_input()
+    return get_highest_scenic_score(scenic_score(map=treemap))
