@@ -523,4 +523,79 @@ def find_smallest_ideal_folder(folders=None, thresh=30000000):
 
     return candidates_sorted[0]
 
+### Day 8
 
+
+def get_day8_input(path='../inputs/day8_input.txt', test=False):
+
+    if test:
+         treemap = '30373\n25512\n65332\n33549\n35390'.split('\n')
+
+    else:
+        with open(path, 'r') as input:
+            treemap = input.read().split('\n')
+
+        input.close()
+
+
+    return np.array([[int(x) for x in row] for row in treemap])
+
+
+def check_array_max(arr=None):
+    max_forward = [(j > max(np.append(arr[:i], [-1]))) for i,j in enumerate(arr)]
+    max_backward = [(j > max(np.append(arr[i+1:], [-1]))) for i,j in enumerate(arr)]
+
+    return [any([x,y]) for (x,y) in zip(max_forward, max_backward)]
+
+
+def treemap_check(map=None):
+
+    rows = np.apply_along_axis(check_array_max, axis=0, arr=map)
+    cols = np.apply_along_axis(check_array_max, axis=1, arr=map)
+
+    return np.sum(np.clip(np.add.reduce([rows,cols]), a_min=0, a_max=1), axis=None)
+
+
+def get_visible_score_component(arr=None):
+
+    visible_map = []
+
+    for i,j in enumerate(arr):
+
+        visible_forward = 0
+        visible_backward = 0
+
+        #for value j at index i, look left 1 by 1
+        for ind in reversed(range(0,max(0,max(0,i)))):
+            if arr[ind] < j:
+                visible_forward +=1
+            elif arr[ind] >= j:
+                visible_forward +=1
+                break
+            else:
+                print('weird error')
+
+
+        for ind in range(i+1,len(arr)):
+            if arr[ind] < j:
+                visible_backward +=1
+            elif arr[ind] >= j:
+                visible_backward +=1
+                break
+            else:
+                print('weird error')
+
+        visible_map.append(visible_forward*visible_backward)
+
+    return visible_map
+
+
+def scenic_score(map=None):
+    rows = np.apply_along_axis(get_visible_score_component, axis=0, arr=map)
+    cols = np.apply_along_axis(get_visible_score_component, axis=1, arr=map)
+
+    return np.multiply(rows,cols)
+
+def get_highest_scenic_score(scores=None):
+
+    return np.max(scores)
