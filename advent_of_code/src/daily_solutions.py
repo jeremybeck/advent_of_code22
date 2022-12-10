@@ -80,3 +80,21 @@ def day9_star1():
 def day9_star2():
     #placeholder
 
+def day10_star1():
+    instructions = get_day10_input(path='../inputs/day10_input.txt', test=False)
+    cycle_instructions = signal(instructions=instructions)
+    values_during_cycle = run_commands(commands=cycle_instructions)
+
+    signal_strength = get_signal_strength(cycles=values_during_cycle)
+    int_vals = [-20 + (i * 40) for i in range(1, int(len(signal_strength) / 20 + 1))]
+    return sum([val[1] for val in signal_strength if val[0] in int_vals])
+
+
+def day10_star2():
+    instructions = get_day10_input(path='../inputs/day10_input.txt', test=False)
+    cycle_instructions = signal(instructions=instructions)
+    values_during_cycle = run_commands(commands=cycle_instructions)
+    pixels = render_screen(values_during_cycle=values_during_cycle)
+
+    return ''.join(pixels).split('\n')
+
