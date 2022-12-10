@@ -784,3 +784,103 @@ def run_knot_simulation(n_knots=10):
 
 
     return rope.count_tail_positions()
+
+
+### Day 10
+
+
+def get_day10_input(path='../inputs/day10_input.txt', test=False):
+
+    if test:
+        instructions = 'noop\naddx 3\naddx -5'
+    else:
+        with open(path, 'r') as input:
+            instructions = input.read()
+
+        input.close()
+
+    return instructions.split('\n')
+
+
+def signal(instructions=None):
+
+    parsed_instructions = []
+
+    for i, cycle in enumerate(instructions):
+        try:
+            command, value = cycle.split(' ')
+            value = int(value)
+        except:
+            command = cycle
+            value = 0
+
+        parsed_instructions.append((i, command, value))
+
+    return parsed_instructions
+
+
+def run_commands(commands=None):
+
+    queue = {}
+    x_bycycle = []
+    x = 1
+
+    i_max = len(commands)
+
+    i = 0
+    register_count = 0
+
+    while i < max(i_max, register_count):
+        x_in = x
+        try:
+            cycle, instruction, value = commands[i]
+
+            if instruction == 'noop':
+                register_count+=1
+            elif instruction == 'addx':
+                if i_max - i < 3:
+                    i_max += (i_max - i) + 1
+                register_count +=2
+                queue[register_count] = value
+                #print('added instruction to queue:',register_count, value)
+        except Exception as e:
+            #print('No More Instructions', i,'reading queue')
+            pass
+
+        x += queue.get(i, 0)
+        x_bycycle.append([i+1,x])
+        #print('cycle:','\t',i+1,'\t','x during:',x)
+        i += 1
+
+    return x_bycycle
+
+
+def render_screen(values_during_cycle=None):
+
+    pixels = []
+
+    for value in values_during_cycle:
+        cycle, sprite_center = value
+        cycle_rel_position = cycle%40 - 1
+        if np.abs(cycle_rel_position-sprite_center) <= 1:
+            pixel = '#'
+        else:
+            pixel = '.'
+
+        pixels.append(pixel)
+        #print(cycle, cycle_rel_position, sprite_center, pixel)
+        if cycle%40 == 0:
+            pixels.append('\n')
+
+    return pixels
+
+
+def get_signal_strength(cycles=None):
+
+    signal_strength = []
+    for cycle in cycles:
+        cyc_val, x_val = cycle
+        signal_strength.append([cyc_val, (cyc_val*x_val)])
+
+    return signal_strength
+
