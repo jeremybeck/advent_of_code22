@@ -599,3 +599,188 @@ def scenic_score(map=None):
 def get_highest_scenic_score(scores=None):
 
     return np.max(scores)
+
+
+### Day 9 Funcs
+
+def get_day9_input(path='../inputs/day9_input.txt', test=False):
+
+    if test:
+        #rope_moves = 'R 4\nU 4\nL 3\nD 1\nR 4\nD 1\nL 5\nR 2'
+        rope_moves = 'R 5\nU 8\nL 8\nD 3\nR 17\nD 10\nL 25\nU 20'
+    else:
+        with open(path, 'r') as input:
+            rope_moves = input.read()
+
+        input.close()
+
+    rope_moves = [(x.split(' ')[0], int(x.split(' ')[1])) for x in rope_moves.split('\n')]
+
+    return rope_moves
+
+
+class Rope():
+
+    head_positions = None
+    tail_positions = None
+
+    knots = {}
+
+    move_map = {
+    'U': np.array([0,1]),
+    'D': np.array([0,-1]),
+    'L': np.array([-1,0]),
+    'R': np.array([1,0])
+    }
+
+    moveset = None
+    leader_coords = None
+    head_s = None
+    tail_s = None
+
+    def __init__(self):
+        self.head_positions = []
+        self.tail_positions = []
+        self.moveset = None
+        self.leader_coords = None
+        self.head_s = None
+        self.tail_s = None
+        self.set_start_positions()
+
+
+    def set_start_positions(self):
+        self.head_positions.append(np.array([0,0]))
+        self.tail_positions.append(np.array([0,0]))
+        self.head_s = np.array([0,0])
+        self.tail_s = np.array([0,0])
+
+    def check_adjacent(self, coord1=None, coord2=None):
+        cdist = np.abs(coord1 - coord2)
+        return max(cdist) <= 1
+
+    def count_tail_positions(self):
+        return len(set([tuple(x) for x in self.tail_positions]))
+
+    def process_moveset(self):
+
+        if self.moveset is None:
+            print('Rope has no moves to process')
+        else:
+
+            for move in self.moveset:
+                direction, steps = move
+
+                vector = self.move_map.get(direction, None)
+
+                for step in range(0,steps):
+                    #print(self.head_s, self.tail_s)
+                    head_pos = self.head_s + vector
+                    self.head_positions.append(head_pos)
+
+                    # Check if tail is within 1 and if not move to head_prevpos
+                    tail_adjacent = self.check_adjacent(coord1=head_pos, coord2=self.tail_s)
+                    #print(head_pos, self.tail_s, 'check distance', tail_adjacent)
+
+                    if tail_adjacent:
+                        #print('tail can stay placed')
+                        tail_pos = self.tail_s
+                    else:
+                        #print('tail needs to move')
+                        tail_pos = self.head_s
+                        self.tail_positions.append(tail_pos)
+
+                    # Set New Start Positions for Next Move
+                    self.head_s = head_pos
+                    self.tail_s = tail_pos
+
+    def print_moves(self):
+        if self.leader_coords is None:
+            print('Rope has no moves to process')
+        else:
+            moves = self.leader_coords
+            print(len(moves))
+
+
+    def process_moves_by_coordinate(self):
+
+        if self.leader_coords is None:
+            print('Rope has no moves to process')
+        else:
+            ldr_crds = self.leader_coords
+            for coord in ldr_crds:
+                #print('head: ',self.head_s,'->',coord, 'tail: ', self.tail_s)
+                head_pos = coord
+
+                self.head_positions.append(head_pos)
+
+                tail_adjacent = self.check_adjacent(coord1=head_pos, coord2=self.tail_s)
+
+                if tail_adjacent:
+                    #print('tail can stay where it is')
+                    tail_pos = self.tail_s
+                else:
+                    # ID Move Type:
+                    shift_coords = coord - self.head_s
+                    if np.abs(shift_coords[0]) > 0 and np.abs(shift_coords[1]) > 0:
+                        diagonal = True
+                    else:
+                        diagonal = False
+
+                    if diagonal:
+                        #print('Diagonal Move Detected')
+                        if np.array_equal(self.head_s,np.array([0,0])):
+                            #print('Head Started on Origin - No Movement Required')
+                            tail_pos = self.tail_s
+                        elif (head_pos[0] == self.tail_s[0]) or (head_pos[1] == self.tail_s[1]):
+                            if head_pos[0] == self.tail_s[0]:
+                                new_shift = np.array([0, shift_coords[1]])
+                                tail_pos = self.tail_s + new_shift
+                                self.tail_positions.append(tail_pos)
+                            else:
+                                new_shift = np.array([shift_coords[0], 0])
+                                tail_pos = self.tail_s + new_shift
+                                self.tail_positions.append(tail_pos)
+
+                        else:
+                            #print('DIAG - Moving Knot by ', move_type)
+                            tail_pos = self.tail_s + shift_coords
+                            self.tail_positions.append(tail_pos)
+                    else:
+                        #print('Moving Knot to Previous Head Position', self.head_s)
+                        tail_pos = self.head_s
+                        self.tail_positions.append(tail_pos)
+
+                # Set New Start Positions for Next Move
+                self.head_s = head_pos
+                self.tail_s = tail_pos
+                #print('tail now at :', self.tail_s)
+
+
+def run_knot_simulation(n_knots=10):
+    print('initial simulation running')
+    #initial rope segment
+    rope1 = Rope()
+    rope1.set_start_positions()
+    rope1.moveset = rope_moves
+    rope1.process_moveset()
+    rope_tail_coords = rope1.tail_positions
+    print(len(rope_tail_coords), 'coordinates to process in next step')
+    #print([tuple(x) for x in rope_tail_coords])
+
+    i = 1
+    while i < n_knots+1:
+        print('knot', i+1, 'simulation')
+        rope = Rope()
+        rope.set_start_positions()
+        rope.leader_coords = rope_tail_coords
+        #print('processing moves')
+        rope.process_moves_by_coordinate()
+        #print('getting coordinates')
+        rope_tail_coords = rope.tail_positions
+        #print('knot',i,'simulation finished')
+        print('total spaces visited for knot',i+1,rope.count_tail_positions())
+        #print([rope_tail_coords])
+        i+=1
+
+
+    return rope.count_tail_positions()
