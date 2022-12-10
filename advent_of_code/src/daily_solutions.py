@@ -72,3 +72,11 @@ def day8_star1():
 def day8_star2():
     treemap = get_day8_input()
     return get_highest_scenic_score(scenic_score(map=treemap))
+
+
+def day9_star1():
+    #placeholder
+
+def day9_star2():
+    #placeholder
+
